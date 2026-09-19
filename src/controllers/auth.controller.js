@@ -1,6 +1,7 @@
 const {
     registerUser,
-    loginUser
+    loginUser,
+    logoutUser
 } = require("../services/auth.service");
 
 const { generateToken } = require("../services/token.service");
@@ -40,7 +41,34 @@ const login = async (req, res, next) => {
     }
 };
 
+const logout = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await loginUser(email, password);
+
+        if (user._id.toString() !== req.user.sub) {
+            const error = new Error("Invalid email or password");
+            error.statusCode = 401;
+
+            return next(error);
+        }
+
+        await logoutUser(
+            req.user.jti,
+            req.user.exp
+        );
+
+        res.status(200).json({
+            message: "Logout successful"
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     register,
-    login
+    login,
+    logout
 };

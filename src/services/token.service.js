@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
@@ -13,9 +14,12 @@ const publicKey = fs.readFileSync(
 );
 
 const generateToken = (userId) => {
+    const jti = crypto.randomUUID();
+
     return jwt.sign(
         {
-            sub: userId
+            sub: userId,
+            jti
         },
         privateKey,
         {

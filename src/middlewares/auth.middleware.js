@@ -1,6 +1,7 @@
 const { verifyToken } = require("../services/token.service");
+const RevokedToken = require("../models/RevokedToken");
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
 
@@ -21,6 +22,17 @@ const authenticate = (req, res, next) => {
         }
 
         const decoded = verifyToken(token);
+
+        const revokedToken = await RevokedToken.findOne({
+            jti: decoded.jti
+        });
+
+        if (revokedToken) {
+            const error = new Error("Token has been revoked");
+            error.statusCode = 401;
+
+            return next(error);
+        }
 
         req.user = decoded;
 

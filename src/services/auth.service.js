@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const RevokedToken = require("../models/RevokedToken");
 const bcrypt = require("bcrypt");
 
 const registerUser = async (email, password) => {
@@ -43,7 +44,21 @@ const loginUser = async (email, password) => {
     return user;
 };
 
+const logoutUser = async (jti, exp) => {
+    const existingRevokedToken = await RevokedToken.findOne({ jti });
+
+    if (existingRevokedToken) {
+        return;
+    }
+
+    await RevokedToken.create({
+        jti,
+        expiresAt: new Date(exp * 1000)
+    });
+};
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    logoutUser
 };
