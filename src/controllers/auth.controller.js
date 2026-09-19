@@ -1,7 +1,9 @@
 const {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    requestPasswordReset,
+    resetPassword: resetPasswordService
 } = require("../services/auth.service");
 
 const { generateToken } = require("../services/token.service");
@@ -67,8 +69,47 @@ const logout = async (req, res, next) => {
     }
 };
 
+const forgetPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        await requestPasswordReset(email);
+
+        res.status(200).json({
+            message:
+                "If an account with this email exists, an OTP has been sent."
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const resetPassword = async (req, res, next) => {
+    try {
+        const {
+            email,
+            otp,
+            newPassword
+        } = req.body;
+
+        await resetPasswordService(
+            email,
+            otp,
+            newPassword
+        );
+
+        res.status(200).json({
+            message: "Password reset successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     register,
     login,
-    logout
+    logout,
+    forgetPassword,
+    resetPassword
 };
