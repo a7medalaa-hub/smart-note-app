@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require("express");
 
 const authRoutes = require("./routes/auth.routes");
+const profileRoutes = require("./routes/profile.routes");
+
 const errorHandler = require("./middlewares/error.middleware");
 
 const app = express();
@@ -14,8 +16,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/", authRoutes);
+app.use("/", profileRoutes);
 
-// Error handling middleware
 app.use(errorHandler);
 
 module.exports = app;
