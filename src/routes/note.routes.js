@@ -1,6 +1,7 @@
 const express = require("express");
 
 const authenticate = require("../middlewares/auth.middleware");
+const validate = require("../middlewares/validate.middleware");
 
 const {
     create,
@@ -8,11 +9,16 @@ const {
     summarize
 } = require("../controllers/note.controller");
 
+const {
+    createNoteSchema
+} = require("../validators/note.validator");
+
 const router = express.Router();
 
 router.post(
     "/notes",
     authenticate,
+    validate(createNoteSchema),
     create
 );
 
