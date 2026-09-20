@@ -1,7 +1,12 @@
 const {
     createNote,
-    deleteNote
+    deleteNote,
+    getNoteById
 } = require("../services/note.service");
+
+const {
+    summarizeText
+} = require("../services/ai.service");
 
 const create = async (req, res, next) => {
     try {
@@ -52,7 +57,31 @@ const remove = async (req, res, next) => {
     }
 };
 
+const summarize = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const ownerId = req.user.sub;
+
+        const note = await getNoteById(
+            id,
+            ownerId
+        );
+
+        const summary = await summarizeText(
+            note.content
+        );
+
+        res.status(200).json({
+            summary
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     create,
-    remove
+    remove,
+    summarize
 };

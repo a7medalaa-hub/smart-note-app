@@ -4,7 +4,8 @@ const authenticate = require("../middlewares/auth.middleware");
 
 const {
     create,
-    remove
+    remove,
+    summarize
 } = require("../controllers/note.controller");
 
 const router = express.Router();
@@ -19,6 +20,12 @@ router.delete(
     "/notes/:id",
     authenticate,
     remove
+);
+
+router.post(
+    "/notes/:id/summarize",
+    authenticate,
+    summarize
 );
 
 module.exports = router;

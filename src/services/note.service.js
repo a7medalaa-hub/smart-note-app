@@ -1,6 +1,10 @@
 const Note = require("../models/Note");
 
-const createNote = async (title, content, ownerId) => {
+const createNote = async (
+    title,
+    content,
+    ownerId
+) => {
     const note = new Note({
         title,
         content,
@@ -12,7 +16,10 @@ const createNote = async (title, content, ownerId) => {
     return note;
 };
 
-const deleteNote = async (noteId, ownerId) => {
+const deleteNote = async (
+    noteId,
+    ownerId
+) => {
     const note = await Note.findOne({
         _id: noteId,
         ownerId
@@ -55,18 +62,27 @@ const getNotes = async ({
         filter.createdAt = {};
 
         if (createdFrom) {
-            filter.createdAt.$gte = new Date(createdFrom);
+            filter.createdAt.$gte = new Date(
+                createdFrom
+            );
         }
 
         if (createdTo) {
-            filter.createdAt.$lte = new Date(createdTo);
+            filter.createdAt.$lte = new Date(
+                createdTo
+            );
         }
     }
 
     const safePage = Math.max(page, 1);
-    const safeLimit = Math.min(Math.max(limit, 1), 50);
 
-    const skip = (safePage - 1) * safeLimit;
+    const safeLimit = Math.min(
+        Math.max(limit, 1),
+        50
+    );
+
+    const skip =
+        (safePage - 1) * safeLimit;
 
     const notes = await Note.find(filter)
         .populate(
@@ -82,8 +98,27 @@ const getNotes = async ({
     return notes;
 };
 
+const getNoteById = async (
+    noteId,
+    ownerId
+) => {
+    const note = await Note.findOne({
+        _id: noteId,
+        ownerId
+    });
+
+    if (!note) {
+        const error = new Error("Note not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return note;
+};
+
 module.exports = {
     createNote,
     deleteNote,
-    getNotes
+    getNotes,
+    getNoteById
 };
