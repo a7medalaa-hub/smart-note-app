@@ -1,5 +1,6 @@
 const {
-    createNote
+    createNote,
+    deleteNote
 } = require("../services/note.service");
 
 const create = async (req, res, next) => {
@@ -32,6 +33,26 @@ const create = async (req, res, next) => {
     }
 };
 
+const remove = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const ownerId = req.user.sub;
+
+        await deleteNote(
+            id,
+            ownerId
+        );
+
+        res.status(200).json({
+            message: "Note deleted successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
-    create
+    create,
+    remove
 };
